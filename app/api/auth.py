@@ -50,6 +50,7 @@ async def login(
         httponly=True,
         samesite="lax",
         max_age=int(access_ttl.total_seconds()),
+        path="/",
         # secure=True,
     )
 
@@ -70,6 +71,7 @@ async def login(
         httponly=True,
         samesite="lax",
         max_age=refresh_ttl_seconds,
+        path="/",
         # secure=True,
     )
 
@@ -134,6 +136,7 @@ async def refresh(
         httponly=True,
         samesite="lax",
         max_age=int(access_ttl.total_seconds()),
+        path="/",
         # secure=True,
     )
     response.set_cookie(
@@ -142,6 +145,7 @@ async def refresh(
         httponly=True,
         samesite="lax",
         max_age=refresh_ttl_seconds,
+        path="/",
         # secure=True,
     )
 

@@ -1,3 +1,4 @@
+from sqlalchemy import update as sa_update, delete as sa_delete
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,3 +28,28 @@ class BaseDAO:
         self.session.add(obj)
         await self.session.flush()
         return obj
+
+    async def update(self, *, id: str, **data):
+        """
+        Обновляет объект по первичному ключу id.
+        Возвращает обновлённый объект (или None, если не найден).
+        """
+        stmt = (
+            sa_update(self.model)
+            .where(self.model.id == id)
+            .values(**data)
+            .returning(self.model)
+        )
+        result = await self.session.execute(stmt)
+        await self.session.flush()
+        return result.scalar_one_or_none()
+
+    async def delete(self, *, id: str) -> bool:
+        """
+        Удаляет объект по id.
+        Возвращает True если что-то удалилось.
+        """
+        stmt = sa_delete(self.model).where(self.model.id == id)
+        result = await self.session.execute(stmt)
+        await self.session.flush()
+        return (result.rowcount or 0) > 0

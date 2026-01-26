@@ -6,6 +6,7 @@ from sqlalchemy import String, DateTime, ForeignKey
 
 from app.core.database import Base
 
+
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
 
