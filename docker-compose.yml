@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:14-alpine
+    container_name: reader_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+  app:
+    build:
+      context: .
+    depends_on:
+      db:
+        condition: service_healthy
+    container_name: pace_reader
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=5432
+      - DB_HOST=db
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY}
+      - PERPLEXITY_DEFAULT_MODEL=${PERPLEXITY_DEFAULT_MODEL}
+      - PERPLEXITY_TIMEOUT=${PERPLEXITY_TIMEOUT}
+      - GIGACHAT_AUTH_KEY=${GIGACHAT_AUTH_KEY}
+      - GIGACHAT_DEFAULT_MODEL=${GIGACHAT_DEFAULT_MODEL}
+      - GIGACHAT_TIMEOUT=${GIGACHAT_TIMEOUT}
+      - UPLOAD_DIR=${UPLOAD_DIR}
+      - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB}
+      - MAX_TEXT_CHARS=${MAX_TEXT_CHARS}
+    volumes:
+      - .:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+volumes:
+  postgres_data:
