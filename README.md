@@ -21,7 +21,7 @@ API ИИ‑сервиса: принимает текст или файл, а з�
 - Docker / Docker Compose
 - LLM: Perplexity, GigaChat (`app/text/*_client.py`)
 
-## Запуск (Docker)
+## Запуск через Docker
 1) Создай `.env` и заполни его:
 ```bash
 cp .env.example .env
@@ -45,6 +45,23 @@ make docker-up
 Остановить:
 ```bash
 make docker-down
+```
+
+## Запуск без Docker
+
+1) Создай `.env` и заполни его:
+```bash
+cp .env.example .env
+```
+
+2) Создай `.venv` и установи зависимости:
+```bash
+python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+```
+
+3) Запусти приложение:
+```bash
+make run
 ```
 
 ## Структура
